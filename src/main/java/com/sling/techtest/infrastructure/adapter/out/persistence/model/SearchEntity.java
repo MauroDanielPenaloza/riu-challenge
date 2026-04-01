@@ -2,9 +2,8 @@ package com.sling.techtest.infrastructure.adapter.out.persistence.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-
-import com.sling.techtest.infrastructure.adapter.out.persistence.converter.IntegerListConverter;
 
 @Entity
 @Table(name = "hotel_searches")
@@ -23,19 +22,22 @@ public class SearchEntity {
     @Column(name = "check_out", nullable = false)
     private LocalDate checkOut;
 
-    @Convert(converter = IntegerListConverter.class)
-    @Column(name = "ages", nullable = false)
-    private List<Integer> ages;
+    @OneToMany(mappedBy = "search", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SearchAge> searchAges = new ArrayList<>();
 
     public SearchEntity() {
     }
 
-    public SearchEntity(String searchId, String hotelId, LocalDate checkIn, LocalDate checkOut, List<Integer> ages) {
+    public SearchEntity(String searchId, String hotelId, LocalDate checkIn, LocalDate checkOut) {
         this.searchId = searchId;
         this.hotelId = hotelId;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
-        this.ages = ages;
+    }
+
+    public void addSearchAge(SearchAge age) {
+        searchAges.add(age);
+        age.setSearch(this);
     }
 
     public String getSearchId() {
@@ -70,11 +72,11 @@ public class SearchEntity {
         this.checkOut = checkOut;
     }
 
-    public List<Integer> getAges() {
-        return ages;
+    public java.util.List<SearchAge> getSearchAges() {
+        return searchAges;
     }
 
-    public void setAges(List<Integer> ages) {
-        this.ages = ages;
+    public void setSearchAges(java.util.List<SearchAge> searchAges) {
+        this.searchAges = searchAges;
     }
 }

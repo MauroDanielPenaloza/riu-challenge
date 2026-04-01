@@ -12,9 +12,9 @@ import java.util.List;
 
 @Repository
 public interface SpringDataSearchRepository extends CrudRepository<SearchEntity, String> {
-
-    @Query("SELECT count(s) FROM SearchEntity s WHERE s.hotelId = :hotelId AND s.checkIn = :checkIn AND s.checkOut = :checkOut AND s.ages = :ages")
-    long countExactSearches(@Param("hotelId") String hotelId, @Param("checkIn") LocalDate checkIn,
-            @Param("checkOut") LocalDate checkOut, @Param("ages") List<Integer> ages);
-
+    @Query("SELECT s FROM SearchEntity s LEFT JOIN FETCH s.searchAges WHERE s.hotelId = :hotelId AND s.checkIn = :checkIn AND s.checkOut = :checkOut")
+    List<SearchEntity> findByHotelIdAndDatesWithAges(
+            @Param("hotelId") String hotelId,
+            @Param("checkIn") LocalDate checkIn,
+            @Param("checkOut") LocalDate checkOut);
 }
