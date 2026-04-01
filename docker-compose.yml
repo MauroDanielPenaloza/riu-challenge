@@ -22,6 +22,12 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--bootstrap-server", "kafka:29092", "--list"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
 
   oracle-db:
     image: gvenzl/oracle-free:latest
@@ -39,9 +45,10 @@ services:
     build: .
     ports:
       - "8081:8080"
+    restart: on-failure
     depends_on:
       kafka:
-        condition: service_started
+        condition: service_healthy
       oracle-db:
         condition: service_healthy
     environment:
@@ -49,3 +56,4 @@ services:
       - DB_URL=jdbc:oracle:thin:@oracle-db:1521/FREE
       - DB_USER=system
       - DB_PASSWORD=oracle
+
