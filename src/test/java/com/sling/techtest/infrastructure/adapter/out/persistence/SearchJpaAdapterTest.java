@@ -2,6 +2,7 @@ package com.sling.techtest.infrastructure.adapter.out.persistence;
 
 import com.sling.techtest.domain.model.HotelSearch;
 import com.sling.techtest.domain.model.HotelSearchId;
+import com.sling.techtest.infrastructure.adapter.out.persistence.model.SearchEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
@@ -60,5 +62,29 @@ public class SearchJpaAdapterTest {
 
         long count = jpaAdapter.countIdenticalSearches(search1);
         assertEquals(2, count);
+    }
+
+    @Test
+    void shouldReturnEmptyWhenSearchNotFound() {
+        Optional<HotelSearch> found = jpaAdapter.findById(new HotelSearchId("non-existent"));
+
+        assertFalse(found.isPresent());
+    }
+
+    @Test
+    void shouldHandleEntityWithNullSearchAges() {
+        SearchEntity entity = new SearchEntity(
+                "null-ages-id",
+                "hotel-null",
+                LocalDate.of(2025, 1, 1),
+                LocalDate.of(2025, 1, 5),
+                null
+        );
+        springDataSearchRepository.save(entity);
+
+        Optional<HotelSearch> found = jpaAdapter.findById(new HotelSearchId("null-ages-id"));
+
+        assertTrue(found.isPresent());
+        assertTrue(found.get().ages().isEmpty());
     }
 }

@@ -102,6 +102,25 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    void shouldHandleUnreadableMessageWithJsonMappingExceptionButBlankFieldName() {
+        JsonMappingException.Reference referenceWithNullField = mock(JsonMappingException.Reference.class);
+        when(referenceWithNullField.getFieldName()).thenReturn(null);
+        JsonMappingException jsonMappingException = mock(JsonMappingException.class);
+        when(jsonMappingException.getPath()).thenReturn(List.of(referenceWithNullField));
+
+        HttpMessageNotReadableException ex = new HttpMessageNotReadableException("parse error", jsonMappingException, null);
+
+        ResponseEntity<ApiErrorResponse> response = handler.handleUnreadableMessage(ex);
+
+        assertAll(
+                () -> assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value()),
+                () -> assertEquals("Solicitud inválida", response.getBody().error()),
+                () -> assertTrue(response.getBody().message().contains("dd/MM/yyyy")),
+                () -> assertTrue(response.getBody().details().isEmpty())
+        );
+    }
+
+    @Test
     void shouldHandleUnreadableMessageWithoutFieldInfo() {
         HttpMessageNotReadableException ex = new HttpMessageNotReadableException("parse error",
                 new RuntimeException("causa genérica"), null);

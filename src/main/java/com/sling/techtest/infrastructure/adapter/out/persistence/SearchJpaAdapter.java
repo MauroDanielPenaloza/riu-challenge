@@ -8,6 +8,7 @@ import com.sling.techtest.infrastructure.adapter.out.persistence.model.SearchEnt
 
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +28,8 @@ public class SearchJpaAdapter implements HotelSearchRepositoryPort {
                 hotelSearch.searchId().value(),
                 hotelSearch.hotelId(),
                 hotelSearch.checkIn(),
-                hotelSearch.checkOut()
+                hotelSearch.checkOut(),
+                new ArrayList<>()
         );
 
         List<Integer> domainAges = hotelSearch.ages();

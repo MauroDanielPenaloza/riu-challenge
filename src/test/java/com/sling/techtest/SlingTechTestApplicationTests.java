@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 import com.sling.techtest.infrastructure.adapter.out.persistence.model.SearchAge;
@@ -40,7 +41,7 @@ class SlingTechTestApplicationTests {
         assertEquals(LocalDate.of(2023, 1, 5), entity.getCheckOut());
         assertEquals(2, entity.getSearchAges().size());
 
-        SearchEntity entity2 = new SearchEntity("id2", "h2", LocalDate.now(), LocalDate.now());
+        SearchEntity entity2 = new SearchEntity("id2", "h2", LocalDate.now(), LocalDate.now(), new ArrayList<>());
         assertEquals("id2", entity2.getSearchId());
     }
 
